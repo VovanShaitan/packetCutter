@@ -76,8 +76,8 @@ func (wp *WorkerPool) GetCollection() *storage.ResultCollection {
 	return wp.collection
 }
 
-func (wp *WorkerPool) GetStats() map[string]interface{} {
-	return map[string]interface{}{
+func (wp *WorkerPool) GetStats() map[string]any {
+	return map[string]any{
 		"workers":       wp.workerCount,
 		"results_count": wp.collection.Count(),
 		"unique_keys":   wp.collection.Len(),
