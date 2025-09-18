@@ -18,10 +18,7 @@ type WorkerPool struct {
 }
 
 func NewWorkerPool(matcherService *services.MatcherService) *WorkerPool {
-	workerCount := runtime.NumCPU()
-	if workerCount < 2 {
-		workerCount = 2
-	}
+	workerCount := max(runtime.NumCPU(), 2)
 
 	wp := &WorkerPool{
 		matcherService: matcherService,
@@ -32,14 +29,14 @@ func NewWorkerPool(matcherService *services.MatcherService) *WorkerPool {
 	}
 
 	wp.wg.Add(workerCount)
-	for i := 0; i < workerCount; i++ {
-		go wp.worker(i)
+	for range workerCount {
+		go wp.worker()
 	}
 
 	return wp
 }
 
-func (wp *WorkerPool) worker(id int) {
+func (wp *WorkerPool) worker() {
 	defer wp.wg.Done()
 	for task := range wp.taskCh {
 		err := wp.matcherService.ProcessTarget(task.Target, task.Configs)
