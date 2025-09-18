@@ -20,7 +20,7 @@ func (s *MatcherService) CountMatchesForSequence(target string, seq domain.Seque
 	}
 
 	count := 0
-	for i := 0; i < targetLen; i++ {
+	for i := range targetLen {
 		for j := 0; j < len(seq[i]); j++ {
 			if seq[i][j] == target[i] {
 				count++
