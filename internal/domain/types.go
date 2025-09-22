@@ -1,15 +1,15 @@
 package domain
 
-type Sequence []string
+type Prediction []string
 
-type SequenceConfig struct {
-	Seq       Sequence
+type PredictionConfig struct {
+	Pred      Prediction
 	BorderMin int
 	BorderMax int
 }
 
-type MatchResult struct {
-	HexResult string
-	Target    string
-	IsValid   bool
+type VariantData struct {
+	HexPredMatches string
+	Variant        string
+	IsValid        bool
 }

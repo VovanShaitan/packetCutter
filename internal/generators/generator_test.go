@@ -7,7 +7,7 @@ import (
 func TestGeneratorService_GenerateRandomString(t *testing.T) {
 	generator := NewGeneratorService()
 
-	str := generator.GenerateRandomString()
+	str := generator.GenerateRandomVariant()
 	if len(str) != 15 {
 		t.Errorf("Expected string length 15, got %d", len(str))
 	}
@@ -24,7 +24,7 @@ func TestGeneratorService_GenerateRandomSlice(t *testing.T) {
 	generator := NewGeneratorService()
 
 	length := 10
-	slice := generator.GenerateRandomSlice(length)
+	slice := generator.GenerateRandomPredict(length)
 	if len(slice) != length {
 		t.Errorf("Expected slice length %d, got %d", length, len(slice))
 	}
@@ -42,17 +42,14 @@ func TestGeneratorService_GenerateRandomSlice(t *testing.T) {
 func TestGeneratorService_GenerateSequenceConfigs(t *testing.T) {
 	generator := NewGeneratorService()
 
-	configs := generator.GenerateSequenceConfigs()
+	configs := generator.GeneratePredictionConfigs()
 	if len(configs) != 10 {
 		t.Errorf("Expected 10 configs, got %d", len(configs))
 	}
 
 	for i, config := range configs {
-		if len(config.Seq) != 15 {
-			t.Errorf("Config %d: expected sequence length 15, got %d", i, len(config.Seq))
-		}
-		if config.BorderMin != 8 || config.BorderMax != 12 {
-			t.Errorf("Config %d: expected borders [8, 12], got [%d, %d]", i, config.BorderMin, config.BorderMax)
+		if len(config.Pred) != 15 {
+			t.Errorf("Config %d: expected sequence length 15, got %d", i, len(config.Pred))
 		}
 	}
 }

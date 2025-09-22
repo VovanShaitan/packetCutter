@@ -39,7 +39,7 @@ func NewWorkerPool(matcherService *services.MatcherService) *WorkerPool {
 func (wp *WorkerPool) worker() {
 	defer wp.wg.Done()
 	for task := range wp.taskCh {
-		err := wp.matcherService.ProcessTarget(task.Target, task.Configs)
+		err := wp.matcherService.CountMatchesForPredSequence(task.Target, task.Configs)
 		if err != nil {
 			select {
 			case wp.errCh <- err:
@@ -50,11 +50,11 @@ func (wp *WorkerPool) worker() {
 	}
 }
 
-func (wp *WorkerPool) Submit(target string, configs []domain.SequenceConfig) {
+func (wp *WorkerPool) Submit(target string, configs *[]domain.PredictionConfig) {
 	wp.taskCh <- Task{Target: target, Configs: configs}
 }
 
-func (wp *WorkerPool) SubmitBatch(targets []string, configs []domain.SequenceConfig) {
+func (wp *WorkerPool) SubmitBatch(targets []string, configs *[]domain.PredictionConfig) {
 	for _, target := range targets {
 		wp.Submit(target, configs)
 	}

@@ -13,16 +13,16 @@ func NewMatcherService(collection *storage.ResultCollection) *MatcherService {
 	return &MatcherService{collection: collection}
 }
 
-func (s *MatcherService) CountMatchesForSequence(target string, seq domain.Sequence) (int, error) {
-	targetLen := len(target)
-	if len(seq) != targetLen {
-		return 0, domain.ErrSequenceLength
+func (s *MatcherService) CountMatchesForPrediction(variant string, pred domain.Prediction) (int, error) {
+	targetLen := len(variant)
+	if len(pred) != targetLen {
+		return 0, domain.ErrPredictLength
 	}
 
 	count := 0
 	for i := range targetLen {
-		for j := 0; j < len(seq[i]); j++ {
-			if seq[i][j] == target[i] {
+		for j := 0; j < len(pred[i]); j++ {
+			if pred[i][j] == variant[i] {
 				count++
 				break
 			}
@@ -31,30 +31,22 @@ func (s *MatcherService) CountMatchesForSequence(target string, seq domain.Seque
 	return count, nil
 }
 
-func (s *MatcherService) ProcessTarget(target string, configs []domain.SequenceConfig) error {
-	return s.countMatchesGenericUltraOptimized(target, configs, s.collection)
-}
-
-func (s *MatcherService) countMatchesGenericUltraOptimized(
-	target string,
-	configs []domain.SequenceConfig,
-	collection *storage.ResultCollection,
-) error {
-	if len(target) != 15 {
-		return domain.ErrInvalidTargetLength
+func (s *MatcherService) CountMatchesForPredSequence(variant string, configs *[]domain.PredictionConfig) error {
+	if len(variant) != 15 {
+		return domain.ErrInvalidVariantLength
 	}
 
-	if len(configs) != 10 {
-		return domain.ErrInvalidConfigLength
+	if len(*configs) != 10 {
+		return domain.ErrInvalidPredSeqLength
 	}
 
-	result := make([]byte, 10)
+	predictionMatches := make([]byte, 10)
 	allInRange := true
 	var firstError error
 
-	for i, config := range configs {
+	for i, config := range *configs {
 		if config.BorderMin > config.BorderMax {
-			result[i] = '0'
+			predictionMatches[i] = '0'
 			allInRange = false
 			if firstError == nil {
 				firstError = domain.ErrInvalidBorders
@@ -62,9 +54,9 @@ func (s *MatcherService) countMatchesGenericUltraOptimized(
 			continue
 		}
 
-		count, err := s.CountMatchesForSequence(target, config.Seq)
+		count, err := s.CountMatchesForPrediction(variant, config.Pred)
 		if err != nil {
-			result[i] = '0'
+			predictionMatches[i] = '0'
 			allInRange = false
 			if firstError == nil {
 				firstError = err
@@ -72,15 +64,15 @@ func (s *MatcherService) countMatchesGenericUltraOptimized(
 			continue
 		}
 
-		result[i] = s.byteToHex(count)
+		predictionMatches[i] = s.byteToHex(count)
 		if count < config.BorderMin || count > config.BorderMax {
 			allInRange = false
 		}
 	}
 
 	if allInRange {
-		hexResult := string(result)
-		collection.Add(hexResult, target)
+		hexResult := string(predictionMatches)
+		s.collection.Add(hexResult, variant)
 	}
 
 	return firstError

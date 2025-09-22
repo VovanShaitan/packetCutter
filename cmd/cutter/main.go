@@ -23,14 +23,14 @@ func main() {
 	targetCount := 100000
 	fmt.Printf("🎲 Генерация %d targets...\n", targetCount)
 
-	targets := generator.GenerateManyTargets(targetCount)
-	configs := generator.GenerateSequenceConfigs()
+	targets := generator.GenerateVariants(targetCount)
+	predictionsConfigs := generator.GeneratePredictionConfigs()
 
 	// Обработка
 	fmt.Printf("⚡ Обработка %d targets...\n", targetCount)
 	start := time.Now()
 
-	workerPool.SubmitBatch(targets, configs)
+	workerPool.SubmitBatch(targets, &predictionsConfigs)
 	errors := workerPool.Wait()
 
 	elapsed := time.Since(start)
@@ -59,16 +59,4 @@ func printResults(pool *workers.WorkerPool, elapsed time.Duration, errors []erro
 func printFilteredResults(collection *storage.ResultCollection) {
 	fmt.Printf("   Single targets: %d keys\n", collection.Len())
 	fmt.Printf("   Всего single targets: %d\n", collection.Count())
-
-	// Показываем первые 5 ключей для примера
-	fmt.Println("\n   Первые 5 single targets:")
-	count := 0
-	allResults := collection.GetAll()
-	for hexResult, targets := range allResults {
-		if count >= 5 {
-			break
-		}
-		fmt.Printf("      Ключ %s: %s\n", hexResult, targets[0])
-		count++
-	}
 }

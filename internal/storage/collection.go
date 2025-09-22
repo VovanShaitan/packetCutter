@@ -13,10 +13,10 @@ func NewResultCollection() *ResultCollection {
 	return &ResultCollection{data: make(map[string][]string)}
 }
 
-func (rc *ResultCollection) Add(hexResult, target string) {
+func (rc *ResultCollection) Add(hexResult, variant string) {
 	rc.mu.Lock()
 	defer rc.mu.Unlock()
-	rc.data[hexResult] = append(rc.data[hexResult], target)
+	rc.data[hexResult] = append(rc.data[hexResult], variant)
 }
 
 func (rc *ResultCollection) Get(hexResult string) ([]string, bool) {

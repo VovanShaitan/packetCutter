@@ -4,7 +4,7 @@ import "packetCutter/internal/domain"
 
 type Task struct {
 	Target  string
-	Configs []domain.SequenceConfig
+	Configs *[]domain.PredictionConfig
 }
 
 type TaskResult struct {

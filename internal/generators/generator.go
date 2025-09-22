@@ -13,15 +13,15 @@ func NewGeneratorService() *GeneratorService {
 	return &GeneratorService{}
 }
 
-func (g *GeneratorService) GenerateRandomSlice(length int) domain.Sequence {
-	result := make(domain.Sequence, length)
+func (g *GeneratorService) GenerateRandomPredict(length int) domain.Prediction {
+	result := make(domain.Prediction, length)
 	for i := range length {
 		result[i] = AllWaysList[rand.Intn(len(AllWaysList))]
 	}
 	return result
 }
 
-func (g *GeneratorService) GenerateRandomString() string {
+func (g *GeneratorService) GenerateRandomVariant() string {
 	result := make([]byte, 15)
 	for i := range 15 {
 		chars := []byte{'1', 'X', '2'}
@@ -30,22 +30,23 @@ func (g *GeneratorService) GenerateRandomString() string {
 	return string(result)
 }
 
-func (g *GeneratorService) GenerateSequenceConfigs() []domain.SequenceConfig {
-	configs := make([]domain.SequenceConfig, 10)
+func (g *GeneratorService) GeneratePredictionConfigs() []domain.PredictionConfig {
+	configs := make([]domain.PredictionConfig, 10)
 	for i := range 10 {
-		configs[i] = domain.SequenceConfig{
-			Seq:       g.GenerateRandomSlice(15),
-			BorderMin: 8,
-			BorderMax: 12,
+		randomNunber := rand.Intn(8)
+		configs[i] = domain.PredictionConfig{
+			Pred:      g.GenerateRandomPredict(15),
+			BorderMin: randomNunber,
+			BorderMax: randomNunber + 8,
 		}
 	}
 	return configs
 }
 
-func (g *GeneratorService) GenerateManyTargets(count int) []string {
+func (g *GeneratorService) GenerateVariants(count int) []string {
 	targets := make([]string, count)
 	for i := range count {
-		targets[i] = g.GenerateRandomString()
+		targets[i] = g.GenerateRandomVariant()
 	}
 	return targets
 }
